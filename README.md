@@ -13,8 +13,8 @@ All that is left for you is to collect and analyze these as a part of your scrip
 
 This project contains the following classes and the following is their usage:
 *************
-## NewTestClass: This is the test itself. </br>
-Initiate the driver. Add the relevant objects:
+## NewTestClass
+This is the test itself. It initiate the driver. Add the relevant objects:
 ```
 WebPageTimersClass pageTimers;
 
