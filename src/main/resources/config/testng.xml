@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Suite" parallel="tests">
-	<test name="Test_Chrome" enabled="false">
+	<test name="Test_Chrome" enabled="true">
 		<parameter name="platformName" value="Windows" />
 		<parameter name="platformVersion" value="10" />
 		<parameter name="browserName" value="Chrome" />
@@ -34,7 +34,7 @@
 			<class name="newTest.NewTestClass"/>
 		</classes>
 	</test> <!-- Test -->
-	<test name="Test_Chrome_Win_7" enabled="true">
+	<test name="Test_Chrome_Win_7" enabled="false">
 		<parameter name="platformName" value="Windows" />
 		<parameter name="platformVersion" value="7" />
 		<parameter name="browserName" value="Chrome" />
