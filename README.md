@@ -15,31 +15,31 @@ This project contains the following classes and the following is their usage:
 *************
 ## NewTestClass: This is the test itself. </br>
 Initiate the driver. Add the relevant objects:
-'''
+```
 WebPageTimersClass pageTimers;
 
 WebPageResourceTimerClass pageResourceTimers;
-'''
+```
 and then, after each page you want to measure, you can:
                 
-'''
+```
 // analyze the page level timers </br>
 pageTimers = new WebPageTimersClass(driver, "Amazon Home");
 // analyze the resource level data
 pageResourceTimers = new WebPageResourceTimerClass(driver, "Amazon Home");
 // analyze the data, compare the page timers to saved data etc.
 analyzeWebTimers("Amazon.com");
-'''
+```
 Of specific interest is the function:
-'''
+```
        if (pageTimers.isPageLoadLongerThanBaseline(200, WebPageTimersClass.CompareMethod.VS_AVG, pageName))
             System.out.println("Page "+ pageName+ "took much longer to load!!! ");
-'''
+```
 The idea here is to compare the page load time vs. past data (stored in CSV), based on a method: could be average load times, compare agains a minimum, maximum, or alternatively one can define a 'base' (in the CSV Name column).
 The comparison is within 'KPI', in this case 200 mSec.
 
 *************
-##WebPageTimerClass
+## WebPageTimerClass
 This is where the page level timers and details are actually stored. The class has some metadata, such as OS/browser details, time of test execution etc., and then the detailed measured timers.
 
 At a high level, the class does the following:
@@ -52,11 +52,11 @@ In more details
 
 #### Constructor 1: WebPageTimersClass (RemoteWebDriver w, String name)
 The constructor fills in the class based on details provided from the driver, according to:
-'''
+```
         Object pageTimersO =  w.executeScript("var a =  window.performance.timing ;     return a; ", pageTimers);
-'''
+```
 Then, organizePageTimers( Map<String, Long> data) simply fills in the fields:
-'''
+```
         long navStart = data.get("navigationStart");
         long loadEventEnd = data.get("loadEventEnd");
         long connectEnd = data.get("connectEnd");
@@ -71,5 +71,5 @@ Then, organizePageTimers( Map<String, Long> data) simply fills in the fields:
         this.httpResponse = responseEnd - responseStart;
         this.buildDOM = domLoaded - responseEnd;
         this.render = loadEventEnd - domLoaded;
-'''
+```
 
