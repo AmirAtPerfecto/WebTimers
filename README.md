@@ -13,7 +13,7 @@ All that is left for you is to collect and analyze these as a part of your scrip
 
 This project contains the following classes and the following is their usage:
 *************
-## NewTestClass ##: This is just the test itself. </br>
+## NewTestClass: This is the test itself. </br>
 Initiate the driver. Add the relevant objects:
 '''
 WebPageTimersClass pageTimers;
@@ -39,5 +39,37 @@ The idea here is to compare the page load time vs. past data (stored in CSV), ba
 The comparison is within 'KPI', in this case 200 mSec.
 
 *************
-##WebPageTimerClass##
+##WebPageTimerClass
+This is where the page level timers and details are actually stored. The class has some metadata, such as OS/browser details, time of test execution etc., and then the detailed measured timers.
+
+At a high level, the class does the following:
+- Constructors (based on the webDriver or based on a String, more below)
+- toString() overload
+- A method to write to CSV (appendToCSV, toCSVString)
+- A method to compare current page load time vs. a reference (isPageLoadLongerThanBaseline). More on this below.
+
+In more details
+
+#### Constructor 1: WebPageTimersClass (RemoteWebDriver w, String name)
+The constructor fills in the class based on details provided from the driver, according to:
+'''
+        Object pageTimersO =  w.executeScript("var a =  window.performance.timing ;     return a; ", pageTimers);
+'''
+Then, organizePageTimers( Map<String, Long> data) simply fills in the fields:
+'''
+        long navStart = data.get("navigationStart");
+        long loadEventEnd = data.get("loadEventEnd");
+        long connectEnd = data.get("connectEnd");
+        long requestStart = data.get("requestStart");
+        long responseStart = data.get("responseStart");
+        long responseEnd = data.get("responseEnd");
+        long domLoaded = data.get("domContentLoadedEventStart");
+
+        this.duration = loadEventEnd - navStart;
+        this.networkTime = connectEnd - navStart;
+        this.httpRequest = responseStart - requestStart;
+        this.httpResponse = responseEnd - responseStart;
+        this.buildDOM = domLoaded - responseEnd;
+        this.render = loadEventEnd - domLoaded;
+'''
 
