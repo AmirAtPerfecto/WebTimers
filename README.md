@@ -14,12 +14,14 @@ All that is left for you is to collect and analyze these as a part of your scrip
 This project contains the following classes and the following is their usage:
 *************
 NewTestClass: This is just the test itself. Initiate the driver. Add the relevant objects:
-    WebPageTimersClass pageTimers;
-    WebPageResourceTimerClass pageResourceTimers;
+
+WebPageTimersClass pageTimers;
+
+WebPageResourceTimerClass pageResourceTimers;
     
-    and then, after each page you want to measure, you can:
+and then, after each page you want to measure, you can:
                 
-// analyze the page level timers
+// analyze the page level timers </br>
 pageTimers = new WebPageTimersClass(driver, "Amazon Home");
 // analyze the resource level data
 pageResourceTimers = new WebPageResourceTimerClass(driver, "Amazon Home");
