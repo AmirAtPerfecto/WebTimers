@@ -48,7 +48,7 @@ At a high level, the class does the following:
 - A method to write to CSV (appendToCSV, toCSVString)
 - A method to compare current page load time vs. a reference (isPageLoadLongerThanBaseline). More on this below.
 
-In more details
+In more details:
 
 #### Constructor 1: WebPageTimersClass (RemoteWebDriver w, String name)
 The constructor fills in the class based on details provided from the driver, according to:
@@ -72,4 +72,33 @@ Then, organizePageTimers( Map<String, Long> data) simply fills in the fields:
         this.buildDOM = domLoaded - responseEnd;
         this.render = loadEventEnd - domLoaded;
 ```
+#### Constructor 2: WebPageTimersClass(String line)
+This constructor takes a string with commas and parses that into a WebPageTimersClass
+
+#### Appending to CSV: appendToCSV(String fileNameAdd)
+The objective is to format the class into a comma separated string so it can be appended to a CSV. The path to the file is defined by environment variable LOCAL_PATH + WEB_TIMERS_FILE_NAME.
+If youm have multiple pages in the script you want to measure, you can add fileNameAdd which will be added just before the .csv
+Examples for these variables are:
+LOCAL_PATH: /Users/Amir/Downloads/
+WEB_TIMERS_FILE_NAME: webtimers.csv
+
+So calling appendToCSV(null) would result in the file name /Users/Amir/Download/webtimers.csv
+or appendToCSM("Amazon") would result in the file name /Users/Amir/Download/webtimers_Amazon_.csv
+
+#### Comparing to existing data: isPageLoadLongerThanBaseline(int KPI, CompareMethod method, String fileNameAdd)
+The objective of the method is to read from an existing CSV file of previously recorded data, and compare the page load time to the previous data collection, with the KPI.
+Assuming there is data in the file, and the file exist, valid comparison methods are:
+- vs. AVG: vs. the average page load time
+- vs. min: vs. the minimal page load time
+- vs. max: same, max
+- vs. base: if a row is in the file where the name = "base" then this would be the basis for the measurement. Note that if this is the selection and there is only one row, it will be considered as the base.
+
+The method reads all the lines from the CSV file, uses constructor #2 above, and compares the page load time against the selected criteria.
+
+*************
+## WebPageResourceTimerClass
+
+
+
+
 
