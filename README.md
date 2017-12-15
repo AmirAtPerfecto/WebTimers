@@ -97,7 +97,40 @@ The method reads all the lines from the CSV file, uses constructor #2 above, and
 
 *************
 ## WebPageResourceTimerClass
+This class contains the resource level details of the page. Some pages can contain hundreds of resources, it is possible to get a lot of data about them to find the reason for poor responsiveness and optimize the page for different platforms.
+The class contains similar header information, such as OS, browser, execution time etc.
+It also contains an array of a sub class called **ResourceDetails**. This class contains, for each resource, the name, type, size and load time for that resource. For example:
 
+```
+Name= https://www.xyz.com/image.jpg
+Type= jpg
+Size= 1148
+Duration= 87.99999999999994
+```
+
+Similar to WebPageTimerClass, it has a constructor from the webdriver. The constructor initializes the header fields.
+It then obtains the resource level data;
+
+```
+(ArrayList<Map<String,Object>>) w.executeScript("var a =  window.performance.getEntriesByType(\"resource\") ;     return a; ", resourceTimers);
+```
+
+And inside **organizePageResourceTimers** it allocates a new 'ResourceDetails' for each entry.
+
+Both class offer Override to toString(), as well as appendToCSV.
+The objective is to format the class into a comma separated string so it can be appended to a CSV. The path to the file is defined by environment variable LOCAL_PATH + WEB_TIMERS_FILE_NAME.
+If you have multiple pages in the script you want to measure, you can add fileNameAdd which will be added just before the .csv
+In addition, it is possible to save the CSV in different files based on the timestamp. That can be done by setting an environment variable APPLY_TIMESTAMP_TO_RESOURCE_FILENAME.
+Examples for these variables are:
+LOCAL_PATH: /Users/Amir/Downloads/
+WEB_TIMERS_FILE_NAME: webResourceTimers.csv
+
+So calling appendToCSV(null) would result in the file name /Users/Amir/Download/webResourceTimers.csv
+or appendToCSM("Amazon") would result in the file name /Users/Amir/Download/webResourceTimers_Amazon_.csv
+
+if APPLY_TIMESTAMP_TO_RESOURCE_FILENAME was defined, an example file name would be
+
+/Users/Amir/Download/webResourceTimers_Amazon__1513312541426.csv
 
 
 
