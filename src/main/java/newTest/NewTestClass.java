@@ -9,13 +9,13 @@ import com.perfecto.reportium.test.TestContext;
 import com.perfecto.reportium.test.result.TestResultFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 import perfecto.Utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class NewTestClass {
@@ -26,6 +26,31 @@ public class NewTestClass {
     WebPageTimersClass pageTimers;
     WebPageResourceTimerClass pageResourceTimers;
 
+    class DataRepo{
+        public DataRepo(String pageName){
+            super();
+            this.pageName = pageName;
+            minDuration=Long.MAX_VALUE;
+            maxDuration = 0L;
+            avgDuration = 0L;
+        }
+        WebPageTimersClass _baseReference;
+        Long minDuration, maxDuration, avgDuration;
+        String pageName;
+    }
+    List<DataRepo> _references = new ArrayList<DataRepo>();
+    String[] pagesToTest = {"Amazon.com", "Quality_DevOPS"};
+
+    @BeforeSuite
+    public void beforeSuite(){
+        for (int i = 0; i<pagesToTest.length; i++) {
+            DataRepo repo = new DataRepo(pagesToTest[i]);
+            repo._baseReference = WebPageTimersClass.buildWebPageTimersClassfromCSV(repo);
+            repo._baseReference.getResourceTimers().setTotals();
+            _references.add(repo);
+        }
+
+    }
 
     @Parameters({"platformName", "platformVersion", "browserName", "browserVersion", "screenResolution"})
     @BeforeTest
@@ -49,7 +74,6 @@ public class NewTestClass {
                 // obtain the data from the page
 
                 pageTimers = new WebPageTimersClass(driver, "Amazon Home");
-                pageResourceTimers = new WebPageResourceTimerClass(driver, "Amazon Home");
                 analyzeWebTimers("Amazon.com");
 
                 driver.findElementById("twotabsearchtextbox").sendKeys("The Digital Qulity Handbook");
@@ -58,7 +82,6 @@ public class NewTestClass {
                 driver.findElementById("add-to-cart-button");
 
                 pageTimers = new WebPageTimersClass(driver, "Quality DevOPS Book");
-                pageResourceTimers = new WebPageResourceTimerClass(driver, "Quality DevOPS Book");
                 analyzeWebTimers("Quality_DevOPS");
 
             reportiumClient.testStop(TestResultFactory.createSuccess());
@@ -83,18 +106,16 @@ public class NewTestClass {
         driver.quit();
     }
 
-    private void analyzeWebTimers(String pageName) {
-        if (pageTimers.isPageLoadLongerThanBaseline(200, WebPageTimersClass.CompareMethod.VS_AVG, pageName))
-            System.out.println("Page "+ pageName+ "took much longer to load!!! ");
-        pageTimers.appendToCSV(pageName);
-        pageTimersString = pageTimers.toString();
-        pageResourceTimers.appendToCSV(pageName);
-        pageTimersString = pageResourceTimers.toString();
 
+    private void analyzeWebTimers(String pageName) {
+        int i = Arrays.asList(pagesToTest).indexOf(pageName);
+        if (pageTimers.comparePagePerformance(200, WebPageTimersClass.CompareMethod.VS_AVG, _references.get(i)._baseReference, _references.get(i).minDuration, _references.get(i).maxDuration,
+                _references.get(i).avgDuration));
+            System.out.println("Page "+ pageTimers.getRunName()+ " took much longer to load!!! ");
+        pageTimers.appendToCSV(pageName);
+        pageTimers.conductFullAnalysisAndPrint(pageName, _references.get(i)._baseReference);
         if (null != pageTimers)
             System.out.println(pageTimers);
-        if (null != pageTimersString)
-            System.out.println(pageTimersString);
     }
 
 
