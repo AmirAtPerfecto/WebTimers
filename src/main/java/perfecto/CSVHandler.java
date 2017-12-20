@@ -30,7 +30,7 @@ public abstract class CSVHandler {
             fileWriter.append(appendToFile);
             fileWriter.append(NEW_LINE_SEPARATOR);
 
-            System.out.println("CSV file was created successfully !!!");
+            System.out.println("CSV file "+fileName+" was created successfully !!!");
         } catch (Exception e) {
             System.out.println("Error in CsvFileWriter !!!");
             e.printStackTrace();

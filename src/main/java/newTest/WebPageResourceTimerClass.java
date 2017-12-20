@@ -309,11 +309,6 @@ public class WebPageResourceTimerClass {
         return sendToCSV;
     }
 
-    public String printPageComparisonIntoCSVString(){
-     // TBD
-     return "";
-    }
-
 
     private void buildPageTypeStatsDiffs( List<ResourceTypeStats> refStats, List<ResourceTypeStats> _local) {
         ResourceTypeStats diff = null;

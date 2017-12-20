@@ -20,11 +20,8 @@ import java.util.List;
 
 public class NewTestClass {
     RemoteWebDriver driver;
-    PerfectoExecutionContext perfectoExecutionContext;
     ReportiumClient reportiumClient;
-    String pageTimersString = "", pageResourceTimersString = "";
     WebPageTimersClass pageTimers;
-    WebPageResourceTimerClass pageResourceTimers;
 
     class DataRepo{
         public DataRepo(String pageName){
@@ -41,20 +38,23 @@ public class NewTestClass {
     List<DataRepo> _references = new ArrayList<DataRepo>();
     String[] pagesToTest = {"Amazon.com", "Quality_DevOPS"};
 
-    @BeforeSuite
-    public void beforeSuite(){
+    @BeforeClass
+    public void beforeClass(){
+        System.out.println("===>>> Entering: NewTestClass.beforeSuite()" );
         for (int i = 0; i<pagesToTest.length; i++) {
             DataRepo repo = new DataRepo(pagesToTest[i]);
             repo._baseReference = WebPageTimersClass.buildWebPageTimersClassfromCSV(repo);
             repo._baseReference.getResourceTimers().setTotals();
             _references.add(repo);
         }
+        System.out.println("===>>> Exiting: NewTestClass.beforeSuite()" );
 
     }
 
     @Parameters({"platformName", "platformVersion", "browserName", "browserVersion", "screenResolution"})
     @BeforeTest
     public void beforeTest(String platformName, String platformVersion, String browserName, String browserVersion, String screenResolution) throws IOException {
+        System.out.println("===>>> Entering: NewTestClass.beforeTest()" );
         driver = Utils.getRemoteWebDriver(platformName, platformVersion, browserName, browserVersion, screenResolution);
         PerfectoExecutionContext perfectoExecutionContext = new PerfectoExecutionContext.PerfectoExecutionContextBuilder()
                 .withProject(new Project("My Project", "1.0"))
@@ -63,11 +63,13 @@ public class NewTestClass {
                 .withWebDriver(driver)
                 .build();
         reportiumClient = new ReportiumClientFactory().createPerfectoReportiumClient(perfectoExecutionContext);
+        System.out.println("===>>> Exiting: NewTestClass.beforeTest()" );
     }
 
     @Test
     public void test() {
         try {
+            System.out.println("===>>> Entering: NewTestClass.test()" );
             reportiumClient.testStart("Perfecto Web Timers Test", new TestContext("Performance", "tag3"));
             System.out.println("Yay");
                 driver.get("http://www.amazon.com");
@@ -89,10 +91,12 @@ public class NewTestClass {
             //reportiumClient.testStop(TestResultFactory.createFailure(e.getMessage(), e));
             e.printStackTrace();
         }
+        System.out.println("===>>> Exiting: NewTestClass.test()" );
     }
 
     @AfterTest
     public void afterTest() {
+        System.out.println("===>>> Entering: NewTestClass.afterTest()" );
         try {
             // Retrieve the URL of the Single Test Report, can be saved to your execution summary and used to download the report at a later point
             String reportURL = reportiumClient.getReportUrl();
@@ -104,10 +108,12 @@ public class NewTestClass {
             e.printStackTrace();
         }
         driver.quit();
+        System.out.println("===>>> Exiting: NewTestClass.afterTest()" );
     }
 
 
     private void analyzeWebTimers(String pageName) {
+        System.out.println("===>>> Entering: NewTestClass.analyzeWebTimers()" );
         int i = Arrays.asList(pagesToTest).indexOf(pageName);
         if (pageTimers.comparePagePerformance(200, WebPageTimersClass.CompareMethod.VS_AVG, _references.get(i)._baseReference, _references.get(i).minDuration, _references.get(i).maxDuration,
                 _references.get(i).avgDuration));
@@ -116,6 +122,7 @@ public class NewTestClass {
         pageTimers.conductFullAnalysisAndPrint(pageName, _references.get(i)._baseReference);
         if (null != pageTimers)
             System.out.println(pageTimers);
+        System.out.println("===>>> Exiting: NewTestClass.analyzeWebTimers.5()" );
     }
 
 

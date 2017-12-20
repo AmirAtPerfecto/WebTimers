@@ -12,7 +12,7 @@
 			<class name="newTest.NewTestClass"/>
 		</classes>
 	</test> <!-- Test -->
-	<test name="Test_Firefox" enabled="false">
+	<test name="Test_Firefox" enabled="true">
 		<parameter name="platformName" value="Windows" />
 		<parameter name="platformVersion" value="10" />
 		<parameter name="browserName" value="Firefox" />
@@ -34,7 +34,7 @@
 			<class name="newTest.NewTestClass"/>
 		</classes>
 	</test> <!-- Test -->
-	<test name="Test_Chrome_Win_7" enabled="false">
+	<test name="Test_Chrome_Win_7" enabled="true">
 		<parameter name="platformName" value="Windows" />
 		<parameter name="platformVersion" value="7" />
 		<parameter name="browserName" value="Chrome" />
