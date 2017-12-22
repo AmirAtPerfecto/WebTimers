@@ -28,10 +28,30 @@ Define a few environment variables:
 - PERFECTO_CLOUD_USERNAME: your cloud username, for example, abd@perfectomobile.com
 - PERFECTO_CLOUD_SECURITY_TOKEN: your cloud security token. You can get it in your cloud, following these instructions: http://developers.perfectomobile.com/display/PD/Security+Token
 
+You will see that 3 files are created for every page. Those 3 files are:
+- webTimers_Amazon.com.csv: this file includes the page level timing for the page you're on (in this case, Amazon.com)
+- pageResourceTimers_Amazon.com_<timestamp>.csv: this file includes details of all the resources downloaded to this page
+- pageComparison_Amazon.com_<OS, OS Version, browser, browser version>_<timestamp>.csv: this file includes a comparison of the current execution vs. a comparison of previous execution.
 
+To set a comparison against a previous execution simply
+- add the word 'base' to one of the previously created page resource timers csv file
+- run the project again
 
+**Make changes and create your own script**
 
-2- Create your script- see NewTestClass.java, test() method.
+Head to NewTestClass.java
+- Change pagesToTest String array to include the name of the pages you want to test
+- Inside the test() method, create your own test script. For each page, call
+```
+                pageTimers = new WebPageTimersClass(driver, "name of the page");
+                analyzeWebTimers("name to embed into the log file names");
+```
+For example:
+```
+                driver.get("http://www.amazon.com");
+                pageTimers = new WebPageTimersClass(driver, "Amazon.com");
+                analyzeWebTimers("Amazon.com");
+```
 
 
 So calling appendToCSV(null) would result in the file name /Users/Amir/Download/webResourceTimers.csv
