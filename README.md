@@ -15,7 +15,7 @@ All that is left for you is to collect and analyze these as a part of your scrip
 
 *************
 ## Getting started
-** To get started **, you need to
+**To get started**, you need to
 
 1- Define a few environment variables:
 
