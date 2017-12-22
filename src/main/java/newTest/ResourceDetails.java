@@ -8,7 +8,7 @@ public class ResourceDetails {
     private long size;
     private double duration;
     private String comparisonResult;
-    public static final String RESOURCE_DETAIL_CSV_FILE_HEADER = "name, type, size, duration, comparison result";
+    static final String RESOURCE_DETAIL_CSV_FILE_HEADER = "name, type, size, duration, comparison result";
 
 
 
@@ -19,32 +19,16 @@ public class ResourceDetails {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public long getSize() {
         return size;
     }
 
-    public void setSize(long size) {
-        this.size = size;
-    }
-
     public double getDuration() {
         return duration;
-    }
-
-    public void setDuration(double duration) {
-        this.duration = duration;
     }
 
     public String getComparisonResult() {
@@ -69,19 +53,11 @@ public class ResourceDetails {
         RESOURCE_NAME,
         RESOURCE_TYPE,
         RESOURCE_SIZE,
-        RESOURCE_DURATION;
+        RESOURCE_DURATION
     }
     //  ************* Constructors
 
-    public ResourceDetails(){
-        super();
-        this.name = "";
-        this.type = "";
-        this.size = 0L;
-        this.duration = 0L;
-        this.comparisonResult = "";
-    }
-    public ResourceDetails(String name, String type, long size, double duration){
+    ResourceDetails(String name, String type, long size, double duration){
         super();
         this.name = name;
         this.type = type;
@@ -89,11 +65,11 @@ public class ResourceDetails {
         this.duration = duration;
         this.comparisonResult = "";
     }
-    public ResourceDetails(String name, String type, long size, double duration, String comparisonResult){
+    ResourceDetails(String name, String type, long size, double duration, String comparisonResult){
         this(name, type, size, duration);
         this.comparisonResult = comparisonResult;
     }
-    public ResourceDetails(String line) {
+    ResourceDetails(String line) {
         super();
         String[] tokens = line.split(COMMA_DELIMITER);
         this.name = tokens[ResourceTimers.RESOURCE_NAME.ordinal()];
