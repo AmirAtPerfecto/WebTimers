@@ -3,6 +3,8 @@ package perfecto;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+// Thanks Ashraf Sarhan for this code
+// https://examples.javacodegeeks.com/core-java/apache/commons/csv-commons/writeread-csv-files-with-apache-commons-csv-example/
 
 public abstract class CSVHandler {
     public static final String COMMA_DELIMITER = ",";
