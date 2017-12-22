@@ -16,6 +16,7 @@ import static perfecto.CSVHandler.COMMA_DELIMITER;
 import static perfecto.CSVHandler.NEW_LINE_SEPARATOR;
 
 public class WebPageResourceTimerClass {
+    // Meta data
     private long id;
     private String runName;
     private String date;
@@ -107,6 +108,8 @@ public class WebPageResourceTimerClass {
         }
         setTotals();
     }
+
+    // classify the types of resources as we read them
     private void classifyResourceTypes(ResourceDetails rd){
         Boolean found = false;
         for (ResourceTypeStats stat:resourceTypeStats)
@@ -164,14 +167,15 @@ public class WebPageResourceTimerClass {
 
     // Assist in building the data provider from CSV for comparisons
     public static WebPageResourceTimerClass buildWebPageTimersClassfromCSV(String fileNameAdd) {
-        // first find the file, it will include fileNameAdd and "base"
+        // first find the file, it should include fileNameAdd and "base"
+        // for example "webResourceTimers_Amazon.com_base_1513959194269.csv
         File f = new File(System.getenv().get("LOCAL_PATH"));
         File[] matchingFiles = f.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.toLowerCase().contains("base") && name.endsWith(".csv") && name.toLowerCase().contains(fileNameAdd.toLowerCase());
             }
         });
-        // found no base reference files
+        // found no base reference files, return empty/initialized class
         if (0 == matchingFiles.length) return new WebPageResourceTimerClass();
 
         String fileName = matchingFiles[0].getAbsolutePath();
@@ -185,9 +189,11 @@ public class WebPageResourceTimerClass {
         WebPageResourceTimerClass webPageResourceTimerClassReference = new WebPageResourceTimerClass(csvFileStrings.get(0));
         // Let's read the strings
         for (String line:csvFileStrings){
+            // read the resource into class
             ResourceDetails rd = new ResourceDetails(line);
+            // add to the array
             webPageResourceTimerClassReference.resourceDetailsArray.add(rd);
-            // count totals
+            // count totals and classify types
             webPageResourceTimerClassReference.classifyResourceTypes(rd);
             System.out.println("Resource Timing Added: " +  rd.toString());
 
@@ -231,7 +237,7 @@ public class WebPageResourceTimerClass {
         s = s+ System.lineSeparator()+"***********";
         return s;
     }
-
+    // send to CSV. The file typically would look like: webResourceTimers_Amazon.com_1513959194269.csv
     public void appendToCSV(String fileNameAdd){
         // TODO define WEB_RESOURCE_TIMERS_FILE_NAME environment variable in order to set where the resource timers data will be saved. For example: webResourceTimers.csv
 
@@ -246,9 +252,11 @@ public class WebPageResourceTimerClass {
 
         if (null != System.getenv().get("APPLY_TIMESTAMP_TO_RESOURCE_FILENAME"))
             fileName = fileName.replace(".csv", System.currentTimeMillis()+".csv");
+        // build the string and send to CSV
         CSVHandler.writeCsvFile(fileName, this.toCSVString(), CSV_FILE_HEADER);
     }
-    public String toCSVString(){
+    // build the CSV string
+    private String toCSVString(){
         String preamble = String.valueOf(id) + COMMA_DELIMITER;
         preamble = preamble + runName+ COMMA_DELIMITER;
         preamble = preamble + date+ COMMA_DELIMITER;
@@ -260,12 +268,15 @@ public class WebPageResourceTimerClass {
         preamble = preamble + browserName+ COMMA_DELIMITER;
         preamble = preamble + browserVersion+ COMMA_DELIMITER;
 
+        // each line will include the preamble (metadata) + the resource data
         String details = "";
         for(int i = 0; i< resourceDetailsArray.size()-1; i++)
             details = details + preamble + resourceDetailsArray.get(i).toCSVString() + NEW_LINE_SEPARATOR ;
         details = details + preamble + resourceDetailsArray.get(resourceDetailsArray.size()-1).toCSVString();
         return details;
     }
+
+    // same, used for the diff arrays when printing the comparison
     public String toCSVStringWithDiffResult(){
         String preamble = String.valueOf(id) + COMMA_DELIMITER;
         preamble = preamble + runName+ COMMA_DELIMITER;
@@ -300,13 +311,18 @@ public class WebPageResourceTimerClass {
         // Compare the page level resource summary
         buildPageTypeStatsDiffs(reference.resourceTypeStats, pageTypeDiff);
         buildPageResourceDiffs(reference.resourceDetailsArray, pageResourceDiff);
+
+        // format the strings
         String separator = NEW_LINE_SEPARATOR + "***********    title   **************" + NEW_LINE_SEPARATOR;
 
+        // page type comparison
         String sendToCSV = separator.replace("title", "Page Type Diff Analysis") +
                 PAGE_TYPE_CSV_FILE_HEADER + NEW_LINE_SEPARATOR;
         for (ResourceTypeStats stat:pageTypeDiff) {
             sendToCSV = sendToCSV + stat.toCSVStringWithDiff() + NEW_LINE_SEPARATOR;
         }
+
+        // resource detail level comparison
         sendToCSV = sendToCSV + separator.replace("title", "Page Resource Diff Analysis") +
                 RESOURCE_DETAIL_CSV_FILE_HEADER + NEW_LINE_SEPARATOR;
         for (ResourceDetails detail:pageResourceDiff) {
@@ -317,7 +333,7 @@ public class WebPageResourceTimerClass {
         return sendToCSV;
     }
 
-
+    // compare the type analysis arrays for this page and the reference
     private void buildPageTypeStatsDiffs( List<ResourceTypeStats> refStats, List<ResourceTypeStats> _local) {
         ResourceTypeStats diff = null;
         // go over the list and compare types to the reference
@@ -355,9 +371,10 @@ public class WebPageResourceTimerClass {
                         break;
                     }
                 }
+                // if it's not found then its a type that was on the reference but not on the new page
                 if (!found) {
                     diff = new ResourceTypeStats(stat.getType(), (-1) * stat.getItems(),
-                            (-1) * stat.getSize(), (-1) * stat.getDuration());
+                            (-1) * stat.getSize(), (-1) * stat.getDuration(), "exist only in reference");
                     stat.setComparisonResult("exist only in reference");
                     _local.add(diff);
                 }
@@ -365,7 +382,7 @@ public class WebPageResourceTimerClass {
         }
     }
 
-
+        // compare the resources one by one
         private void buildPageResourceDiffs(List<ResourceDetails> refStatsArray, List<ResourceDetails> _localArray) {
             ResourceDetails diff = null;
             // go over the list and compare resources to the reference
@@ -403,6 +420,7 @@ public class WebPageResourceTimerClass {
                             break;
                         }
                     }
+                    // if it's not found then its a resource that was on the reference but not on the new page
                     if (!found) {
                         diff = new ResourceDetails(rd.getName(), rd.getType(),
                                 (-1) * rd.getSize(), (-1) * rd.getDuration(), "exist only in reference");
