@@ -53,91 +53,44 @@ For example:
                 analyzeWebTimers("Amazon.com");
 ```
 
-
-## Under the hood
-This project contains the following classes and the following is their usage:
 *************
-## NewTestClass
+## Under the hood
+
+This project contains the following classes and the following is their usage:
+
+### NewTestClass
 This is the test itself. It initiate the driver. Add the relevant objects:
 ```
-WebPageTimersClass pageTimers;
-
-WebPageResourceTimerClass pageResourceTimers;
+WebPageTimersClass pageTimers; // this is for the page timing data in the script
+List<DataRepo> _references; // this is basically a set of page data that is read from the file system before any test is run to compare against current execution.
+String[] pagesToTest = {"page1", "page2"}; //set this array to preload the previous page data for comparison for each page in the test
 ```
 and then, after each page you want to measure, you can:
                 
 ```
-// analyze the page level timers </br>
-pageTimers = new WebPageTimersClass(driver, "Amazon Home");
-// analyze the resource level data
-pageResourceTimers = new WebPageResourceTimerClass(driver, "Amazon Home");
-// analyze the data, compare the page timers to saved data etc.
-analyzeWebTimers("Amazon.com");
+                driver.get("http://www.amazon.com");
+                // obtain the data from the page and analyze
+                pageTimers = new WebPageTimersClass(driver, "Amazon Home");
+                analyzeWebTimers("Amazon.com");
 ```
-Of specific interest is the function:
-```
-       if (pageTimers.isPageLoadLongerThanBaseline(200, WebPageTimersClass.CompareMethod.VS_AVG, pageName))
-            System.out.println("Page "+ pageName+ "took much longer to load!!! ");
-```
-The idea here is to compare the page load time vs. past data (stored in CSV), based on a method: could be average load times, compare agains a minimum, maximum, or alternatively one can define a 'base' (in the CSV Name column).
-The comparison is within 'KPI', in this case 200 mSec.
+
+inside analyzeWebTimer(name):
+- find the reference in the dataRepo array
+- compare against it (select method: min, max, avg or 'base')
+- print all the data to CSV
+- compare against previous page, print result to CSV
 
 *************
-## WebPageTimerClass
-This is where the page level timers and details are actually stored. The class has some metadata, such as OS/browser details, time of test execution etc., and then the detailed measured timers.
+### WebPageTimerClass
+This is where the page level timers are actually stored. In addition, there's a sub class called WebResourceTimerClass, with all the detailed resources and analysus.
+The class has some metadata, such as OS/browser details, time of test execution etc., and then the detailed measured timers.
 
 At a high level, the class does the following:
 - Constructors (based on the webDriver or based on a String, more below)
 - toString() overload
 - A method to write to CSV (appendToCSV, toCSVString)
+- A method to create read from CSV and fill in the class
 - A method to compare current page load time vs. a reference (isPageLoadLongerThanBaseline). More on this below.
-
-In more details:
-
-#### Constructor 1: WebPageTimersClass (RemoteWebDriver w, String name)
-The constructor fills in the class based on details provided from the driver, according to:
-```
-        Object pageTimersO =  w.executeScript("var a =  window.performance.timing ;     return a; ", pageTimers);
-```
-Then, organizePageTimers( Map<String, Long> data) simply fills in the fields:
-```
-        long navStart = data.get("navigationStart");
-        long loadEventEnd = data.get("loadEventEnd");
-        long connectEnd = data.get("connectEnd");
-        long requestStart = data.get("requestStart");
-        long responseStart = data.get("responseStart");
-        long responseEnd = data.get("responseEnd");
-        long domLoaded = data.get("domContentLoadedEventStart");
-
-        this.duration = loadEventEnd - navStart;
-        this.networkTime = connectEnd - navStart;
-        this.httpRequest = responseStart - requestStart;
-        this.httpResponse = responseEnd - responseStart;
-        this.buildDOM = domLoaded - responseEnd;
-        this.render = loadEventEnd - domLoaded;
-```
-#### Constructor 2: WebPageTimersClass(String line)
-This constructor takes a string with commas and parses that into a WebPageTimersClass
-
-#### Appending to CSV: appendToCSV(String fileNameAdd)
-The objective is to format the class into a comma separated string so it can be appended to a CSV. The path to the file is defined by environment variable LOCAL_PATH + WEB_TIMERS_FILE_NAME.
-If youm have multiple pages in the script you want to measure, you can add fileNameAdd which will be added just before the .csv
-Examples for these variables are:
-LOCAL_PATH: /Users/Amir/Downloads/
-WEB_TIMERS_FILE_NAME: webtimers.csv
-
-So calling appendToCSV(null) would result in the file name /Users/Amir/Download/webtimers.csv
-or appendToCSM("Amazon") would result in the file name /Users/Amir/Download/webtimers_Amazon_.csv
-
-#### Comparing to existing data: isPageLoadLongerThanBaseline(int KPI, CompareMethod method, String fileNameAdd)
-The objective of the method is to read from an existing CSV file of previously recorded data, and compare the page load time to the previous data collection, with the KPI.
-Assuming there is data in the file, and the file exist, valid comparison methods are:
-- vs. AVG: vs. the average page load time
-- vs. min: vs. the minimal page load time
-- vs. max: same, max
-- vs. base: if a row is in the file where the name = "base" then this would be the basis for the measurement. Note that if this is the selection and there is only one row, it will be considered as the base.
-
-The method reads all the lines from the CSV file, uses constructor #2 above, and compares the page load time against the selected criteria.
 
 *************
 ## WebPageResourceTimerClass
@@ -152,30 +105,11 @@ Size= 1148
 Duration= 87.99999999999994
 ```
 
-Similar to WebPageTimerClass, it has a constructor from the webdriver. The constructor initializes the header fields.
-It then obtains the resource level data;
+It also has an array of sub class called **ResourceTypeStats**, which summarizes the total stats per each resource type (items, size, duration).
 
-```
-(ArrayList<Map<String,Object>>) w.executeScript("var a =  window.performance.getEntriesByType(\"resource\") ;     return a; ", resourceTimers);
-```
+Methods are similar to WebPageTimersClass
 
-And inside **organizePageResourceTimers** it allocates a new 'ResourceDetails' for each entry.
-
-Both class offer Override to toString(), as well as appendToCSV.
-The objective is to format the class into a comma separated string so it can be appended to a CSV. The path to the file is defined by environment variable LOCAL_PATH + WEB_TIMERS_FILE_NAME.
-If you have multiple pages in the script you want to measure, you can add fileNameAdd which will be added just before the .csv
-In addition, it is possible to save the CSV in different files based on the timestamp. That can be done by setting an environment variable APPLY_TIMESTAMP_TO_RESOURCE_FILENAME.
-Examples for these variables are:
-LOCAL_PATH: /Users/Amir/Downloads/
-WEB_TIMERS_FILE_NAME: webResourceTimers.csv
-
-So calling appendToCSV(null) would result in the file name /Users/Amir/Download/webResourceTimers.csv
-or appendToCSM("Amazon") would result in the file name /Users/Amir/Download/webResourceTimers_Amazon_.csv
-
-if APPLY_TIMESTAMP_TO_RESOURCE_FILENAME was defined, an example file name would be
-
-/Users/Amir/Download/webResourceTimers_Amazon__1513312541426.csv
-
-
-
-
+Lastly, there are 3 classes worth mentioning:
+- ResourceDetails: these are the details of all individual resources
+- ResourceTypeStats: stats about the types of resources (images, links,..)
+- CSVHandler: handles the details of reading and writing to CSV (Kudos to Ashraf Sarhan: https://examples.javacodegeeks.com/core-java/apache/commons/csv-commons/writeread-csv-files-with-apache-commons-csv-example/)
