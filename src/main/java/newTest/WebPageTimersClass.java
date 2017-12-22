@@ -14,19 +14,21 @@ import static perfecto.CSVHandler.NEW_LINE_SEPARATOR;
 
 public class WebPageTimersClass {
     private static final String CSV_FILE_HEADER = "id, name, date, time, page, OS name, OS version, browser name, browser version, duration, network, http Request, http response, build DOM, render, total resources, total resources size, total resources duration";
+    // a bit of meta data
     private long id;
     private String runName;
     private String date;
     private String time;
     private String page;
     private String OSName, OSVersion, browserName, browserVersion;
+    // page level timers
     private long duration,
     networkTime,
     httpRequest,
     httpResponse,
     buildDOM,
     render;
-
+    // resource timers class
     private WebPageResourceTimerClass resourceTimers;
 
     public WebPageResourceTimerClass getResourceTimers(){
@@ -47,6 +49,7 @@ public class WebPageTimersClass {
         this.browserName = w.getCapabilities().getCapability("browserName").toString();
         this.browserVersion = w.getCapabilities().getCapability("browserVersion").toString();
 
+        // build the page timers from the driver
         Map<String,String> pageTimers = new HashMap<String,String>();
         Object pageTimersO =  w.executeScript("var a =  window.performance.timing ;     return a; ", pageTimers);
         organizePageTimers ((Map<String, Long>) pageTimersO);
@@ -73,6 +76,7 @@ public class WebPageTimersClass {
         this.httpResponse = Long.parseLong(tokens[PageTimers.HTTPRES.ordinal()]);
         this.buildDOM = Long.parseLong(tokens[PageTimers.BUILDDOM.ordinal()]);
         this.render = Long.parseLong(tokens[PageTimers.RENDER.ordinal()]);
+        // build the rest of resource data from CSV
         this.resourceTimers = WebPageResourceTimerClass.buildWebPageTimersClassfromCSV(fileNameAdd);
     }
 
@@ -97,7 +101,7 @@ public class WebPageTimersClass {
         this.resourceTimers = new WebPageResourceTimerClass();
     }
 
-    //  ************* Build a global data provider
+    //  ************* In order to build a global data provider to compare against
     public static WebPageTimersClass buildWebPageTimersClassfromCSV(NewTestClass.DataRepo repo) {
         // TODO define WEB_TIMERS_FILE_NAME environment variable in order to set where the project will attempt to read previously recorded page timers. For example: webTimers.csv
         String fileName = System.getenv().get("LOCAL_PATH");
@@ -105,20 +109,23 @@ public class WebPageTimersClass {
             fileName = fileName+ System.getenv().get("WEB_TIMERS_FILE_NAME");
         else
             fileName = fileName + "webTimers.csv";
+        // which page to compare against
         if (null != repo.pageName)
             fileName = fileName.replace(".csv", "_"+repo.pageName+"_.csv");
 
         // read from the CSV file
         List<String> csvFileStrings = CSVHandler.readCsvFile(fileName);
-        // Is the file empty?
+        // Is the file empty? return empty object
         if (null == csvFileStrings || csvFileStrings.size() == 0) return new WebPageTimersClass();
         WebPageTimersClass baseReferenceToReturn = null;
         // Let's read the strings
         for (String line:csvFileStrings){
+            // create page timers class, as well as the internal resource analysis
             WebPageTimersClass baseReference = new WebPageTimersClass(line, repo.pageName);
             if (repo.minDuration > baseReference.duration) repo.minDuration = baseReference.duration;
             if (repo.maxDuration < baseReference.duration) repo.maxDuration = baseReference.duration;
             repo.avgDuration = repo.avgDuration + baseReference.duration;
+            // has a 'base' reference been defined? this will be the string 'base' in the name column
             if (csvFileStrings.size() == 1 || baseReference.runName.toLowerCase().equals("base") ){
                 baseReferenceToReturn =  baseReference;
             }
@@ -133,6 +140,7 @@ public class WebPageTimersClass {
 
     private void organizePageTimers( Map<String, Long> data)
     {
+        // see https://developer.mozilla.org/en-US/docs/Web/API/Resource_Timing_API/Using_the_Resource_Timing_API
         long navStart = data.get("navigationStart");
         long loadEventEnd = data.get("loadEventEnd");
         long connectEnd = data.get("connectEnd");
@@ -188,6 +196,7 @@ public class WebPageTimersClass {
         return send;
     }
 
+    // save to CSV. File name would look something like: webtimers_amazon.com_.csc
     public void appendToCSV(String fileNameAdd){
         String fileName = System.getenv().get("LOCAL_PATH");
         // TODO define WEB_TIMERS_FILE_NAME environment variable in order to name your page timers file. For example: webTimers.csv
@@ -197,8 +206,10 @@ public class WebPageTimersClass {
             fileName = fileName + "webTimers.csv";
         if (null != fileNameAdd)
             fileName = fileName.replace(".csv", "_"+fileNameAdd+"_.csv");
+        // create the data from the page and summary of the resource data to the CSV
         CSVHandler.writeCsvFile(fileName, this.toCSVString(), CSV_FILE_HEADER);
-        // Add the resource level summary to a separate file
+
+        // Add the resource level detail to a separate file
         if (null != this.resourceTimers)
             resourceTimers.appendToCSV(fileNameAdd);
     }
@@ -221,7 +232,7 @@ public class WebPageTimersClass {
         send = send + httpResponse+ COMMA_DELIMITER;
         send = send + buildDOM+ COMMA_DELIMITER;
         send = send + render + COMMA_DELIMITER;
-        // Add the resource level summary
+        // Add the resource level summary: total resources, size and duration
         if (null != this.resourceTimers)
             send = send+this.resourceTimers.getPageResourceStatsSummaryForCSVString();
         return send;
@@ -252,8 +263,7 @@ public class WebPageTimersClass {
 
     }
 
-    // print page diff to CSV
-
+    // print page diff to CSV; typical page result would look like pageComparison_Amazon.com_<OS and browser>_<timestamp>.csv
     public void conductFullAnalysisAndPrint(String fileNameAdd, WebPageTimersClass baseReference){
         // TODO define WEB_PAGE_COMPARISON_FILE_NAME environment variable in order to name your comparison summary file. For example: pageComparison.csv
         String fileName = System.getenv().get("LOCAL_PATH");
@@ -270,7 +280,7 @@ public class WebPageTimersClass {
                 "Current Run,"+this.toCSVString() + NEW_LINE_SEPARATOR+
                 "Base Run,"+baseReference.toCSVString() + NEW_LINE_SEPARATOR;
 
-        // handle page type stats
+        // handle page type stats: type analysis + detailed resources
         sendToCSV = sendToCSV + this.resourceTimers.conductFullAnalysisAndPrint(baseReference.getResourceTimers());
 
         CSVHandler.writeCsvFile(fileName, sendToCSV, "");
