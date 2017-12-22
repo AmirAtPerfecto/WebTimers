@@ -2,7 +2,7 @@
 This project demonstrates the usage of W3C Navigation Timing API (on any browser) to examine web page responsiveness and root cause in any test as part of the CI, including smoke, regression etc. The project is build such that it should be very easy to add the page performance analysis to any existing test.
 Initially you can use this project to collect and analyze page and resource level timing for pages of your script. But advanced usage also allows you to compare the current run against previous executions by page load time, analysis of resources by total, types, size and duration, and then individual level resource analysis.
 
-## Objective:
+## Objective
 Assume you have a desktop or mobile website, and you develop it as part of your agile cycle. Would it be useful to know, by page, by browser/version/OS/OS version whether suddenly you increased the page load time significantly?
 Would it be good to know that immediately, say, as part of the smoke test on commit?
 Also, if the time did increase, would it be helpful to know what resources this page download, the URL for each, size, time etc.?
@@ -19,28 +19,28 @@ All that is left for you is to collect and analyze these as a part of your scrip
 
 Define a few environment variables:
 
-- LOCAL_PATH: the folder to save all files, for example: /Users/Amir-Perfecto/Downloads/WebTimers/
-- WEB_TIMERS_FILE_NAME: Optional, the name of the page level web timers file, for example: webtimers.csv
-- WEB_RESOURCE_TIMERS_FILE_NAME: Optional, the name of the resource timers data file, for example: webResourcetimers.csv
-- APPLY_TIMESTAMP_TO_RESOURCE_FILENAME: Optional, set this to any value (ex.: true) to save the resource timers data in a separate file each run.
+- **LOCAL_PATH**: the folder to save all files, for example: /Users/Amir-Perfecto/Downloads/WebTimers/
+- **WEB_TIMERS_FILE_NAME**: Optional, the name of the page level web timers file, for example: webtimers.csv
+- **WEB_RESOURCE_TIMERS_FILE_NAME**: Optional, the name of the resource timers data file, for example: webResourcetimers.csv
+- **APPLY_TIMESTAMP_TO_RESOURCE_FILENAME**: Optional, set this to any value (ex.: true) to save the resource timers data in a separate file each run.
 
-- PERFECTO_CLOUD: your cloud name, for example, abc.perfectomobile.com
-- PERFECTO_CLOUD_USERNAME: your cloud username, for example, abd@perfectomobile.com
-- PERFECTO_CLOUD_SECURITY_TOKEN: your cloud security token. You can get it in your cloud, following these instructions: http://developers.perfectomobile.com/display/PD/Security+Token
+- **PERFECTO_CLOUD**: your cloud name, for example, abc.perfectomobile.com
+- **PERFECTO_CLOUD_USERNAME**: your cloud username, for example, abd@perfectomobile.com
+- **PERFECTO_CLOUD_SECURITY_TOKEN**: your cloud security token. You can get it in your cloud, following these instructions: http://developers.perfectomobile.com/display/PD/Security+Token
 
-You will see that 3 files are created for every page. Those 3 files are:
-- webTimers_Amazon.com.csv: this file includes the page level timing for the page you're on (in this case, Amazon.com)
-- pageResourceTimers_Amazon.com_<timestamp>.csv: this file includes details of all the resources downloaded to this page
-- pageComparison_Amazon.com_<OS, OS Version, browser, browser version>_<timestamp>.csv: this file includes a comparison of the current execution vs. a comparison of previous execution.
+You will see that **3 files are created for every page**. Those 3 files are:
+- **webTimers**_Amazon.com.csv: this file includes the page level timing for the page you're on (in this case, Amazon.com)
+- **pageResourceTimers**_Amazon.com_<timestamp>.csv: this file includes details of all the resources downloaded to this page
+- **pageComparison**_Amazon.com_<OS, OS Version, browser, browser version>_<timestamp>.csv: this file includes a comparison of the current execution vs. a comparison of previous execution.
 
-To set a comparison against a previous execution simply
+To **set a comparison against a previous execution** simply
 - add the word 'base' to one of the previously created page resource timers csv file
 - run the project again
 
 **Make changes and create your own script**
 
 Head to NewTestClass.java
-- Change pagesToTest String array to include the name of the pages you want to test
+- Change **pagesToTest** String array to include the name of the pages you want to test
 - Inside the test() method, create your own test script. For each page, call
 ```
                 pageTimers = new WebPageTimersClass(driver, "name of the page");
@@ -54,21 +54,7 @@ For example:
 ```
 
 
-So calling appendToCSV(null) would result in the file name /Users/Amir/Download/webResourceTimers.csv
-or appendToCSM("Amazon") would result in the file name /Users/Amir/Download/webResourceTimers_Amazon_.csv
-
-if APPLY_TIMESTAMP_TO_RESOURCE_FILENAME was defined, an example file name would be
-
-
-WEB_PAGE_COMPARISON_FILE_NAME pageComparison.csv
-
-
-
-
-
-
-
-
+## Under the hood
 This project contains the following classes and the following is their usage:
 *************
 ## NewTestClass
