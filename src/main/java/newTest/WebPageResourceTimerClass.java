@@ -59,7 +59,7 @@ public class WebPageResourceTimerClass {
     //  ************* Constructors
 
     // build a web page timers class from a web page driver
-    public WebPageResourceTimerClass (RemoteWebDriver w, String name) {
+    WebPageResourceTimerClass(RemoteWebDriver w, String name) {
         super();
         this.page = w.getCurrentUrl();
         this.runName = name;
@@ -111,7 +111,6 @@ public class WebPageResourceTimerClass {
 
     // classify the types of resources as we read them
     private void classifyResourceTypes(ResourceDetails rd){
-        Boolean found = false;
         for (ResourceTypeStats stat:resourceTypeStats)
             if (stat.getType().toLowerCase().equals(rd.getType().toLowerCase())){
                 stat.setItems(stat.getItems() + 1);
@@ -126,7 +125,7 @@ public class WebPageResourceTimerClass {
     }
 
     // build from a string, we will need this for the CSV comparison
-    public WebPageResourceTimerClass(String line) {
+    private WebPageResourceTimerClass(String line) {
         super();
         String[] tokens = line.split(COMMA_DELIMITER);
         this.id = Long.parseLong(tokens[ResourceTimers.ID.ordinal()]);
@@ -147,7 +146,7 @@ public class WebPageResourceTimerClass {
     }
 
     // empty constructor
-    public WebPageResourceTimerClass() {
+    WebPageResourceTimerClass() {
         super();
         this.id = 0L;
         this.runName = "base";
@@ -276,32 +275,10 @@ public class WebPageResourceTimerClass {
         return details;
     }
 
-    // same, used for the diff arrays when printing the comparison
-    public String toCSVStringWithDiffResult(){
-        String preamble = String.valueOf(id) + COMMA_DELIMITER;
-        preamble = preamble + runName+ COMMA_DELIMITER;
-        preamble = preamble + date+ COMMA_DELIMITER;
-        preamble = preamble + time+ COMMA_DELIMITER;
-        preamble = preamble + page+ COMMA_DELIMITER;
-
-        preamble = preamble + OSName+ COMMA_DELIMITER;
-        preamble = preamble + OSVersion+ COMMA_DELIMITER;
-        preamble = preamble + browserName+ COMMA_DELIMITER;
-        preamble = preamble + browserVersion+ COMMA_DELIMITER;
-
-        String details = "";
-        for(int i = 0; i< resourceDetailsArray.size()-1; i++)
-            details = details + preamble + resourceDetailsArray.get(i).toCSVString() + NEW_LINE_SEPARATOR ;
-        details = details + preamble + resourceDetailsArray.get(resourceDetailsArray.size()-1).toCSVString();
-        return details;
-    }
-
     // Allow the page-level summary to include high level resource summary
     public String getPageResourceStatsSummaryForCSVString(){
         return totalResources + COMMA_DELIMITER + totalResourcesSize + COMMA_DELIMITER + totalResourcesDuration;
     }
-
-
 
     // ************* Comparison Operations
 
