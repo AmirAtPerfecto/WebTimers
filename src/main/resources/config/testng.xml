@@ -23,7 +23,7 @@
 			<class name="newTest.NewTestClass"/>
 		</classes>
 	</test> <!-- Test -->
-	<test name="Test_Edge" enabled="false">
+	<test name="Test_Edge" enabled="true">
 		<parameter name="platformName" value="Windows" />
 		<parameter name="platformVersion" value="10" />
 		<parameter name="browserName" value="Edge" />
@@ -45,6 +45,7 @@
 			<class name="newTest.NewTestClass"/>
 		</classes>
 	</test> <!-- Test -->
- </suite> <!-- Suite -->
+
+</suite> <!-- Suite -->
 
 

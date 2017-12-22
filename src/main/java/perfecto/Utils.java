@@ -24,22 +24,18 @@ public class Utils {
 		    
 			// Set cloud host and credentials values from CI, else use local values
 			String PERFECTO_HOST = System.getenv().get("PERFECTO_CLOUD");
-			String PERFECTO_SECURITY_TOKEN = System.getenv().get("PERFECTO_CLOUD_SECURITY_TOKEN");
-			capabilities.setCapability("user", System.getenv().get("PERFECTO_CLOUD_USERNAME"));
-
-
 
 			String host = PERFECTO_HOST;
-//			capabilities.setCapability("securityToken", PERFECTO_SECURITY_TOKEN);
+
+			capabilities.setCapability("user", System.getenv().get("PERFECTO_CLOUD_USERNAME"));
+			capabilities.setCapability("securityToken", System.getenv().get("PERFECTO_CLOUD_SECURITY_TOKEN"));
 	        //TODO: Change your device ID
 	        capabilities.setCapability("platformName", platformName);
 	        capabilities.setCapability("platformVersion", platformVersion);
 	        capabilities.setCapability("manufacturer", manufacturer);
 	        capabilities.setCapability("model", model);
-//	        if (null != appType)
-//	        	capabilities.setCapability(appType, appID); //app id
-//	        capabilities.setCapability("winAppId", "Microsoft.MicrosoftEdge_8wekyb3d8bbwe!App"); //app id
-	        capabilities.setCapability("deviceName", deviceName);
+			if (null != deviceName)
+	        	capabilities.setCapability("deviceName", deviceName);
 	        // Use the automationName capability to define the required framework - Appium (this is the default) or PerfectoMobile.
 	        capabilities.setCapability("automationName", "Appium");
 	        //TODO: Audio setup
@@ -107,7 +103,7 @@ public class Utils {
 		}
 
 		RemoteWebDriver webdriver = new RemoteWebDriver(
-				new URL("https://" + PERFECTO_HOST + "/nexperience/perfectomobile/wd/hub/fast"), capabilities);
+				new URL("https://" + PERFECTO_HOST + "/nexperience/perfectomobile/wd/hub/fast"), capabilities); ///fast
 
 		// Define RemoteWebDriver timeouts
 		webdriver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);

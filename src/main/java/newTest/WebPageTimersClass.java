@@ -99,7 +99,12 @@ public class WebPageTimersClass {
 
     //  ************* Build a global data provider
     public static WebPageTimersClass buildWebPageTimersClassfromCSV(NewTestClass.DataRepo repo) {
-        String fileName = System.getenv().get("LOCAL_PATH") + System.getenv().get("WEB_TIMERS_FILE_NAME");
+        // TODO define WEB_TIMERS_FILE_NAME environment variable in order to set where the project will attempt to read previously recorded page timers. For example: webTimers.csv
+        String fileName = System.getenv().get("LOCAL_PATH");
+        if (null != System.getenv().get("WEB_TIMERS_FILE_NAME"))
+            fileName = fileName+ System.getenv().get("WEB_TIMERS_FILE_NAME");
+        else
+            fileName = fileName + "webTimers.csv";
         if (null != repo.pageName)
             fileName = fileName.replace(".csv", "_"+repo.pageName+"_.csv");
 
@@ -184,7 +189,12 @@ public class WebPageTimersClass {
     }
 
     public void appendToCSV(String fileNameAdd){
-        String fileName = System.getenv().get("LOCAL_PATH") + System.getenv().get("WEB_TIMERS_FILE_NAME");
+        String fileName = System.getenv().get("LOCAL_PATH");
+        // TODO define WEB_TIMERS_FILE_NAME environment variable in order to name your page timers file. For example: webTimers.csv
+        if (null != System.getenv().get("WEB_TIMERS_FILE_NAME"))
+            fileName = fileName+ System.getenv().get("WEB_TIMERS_FILE_NAME");
+        else
+            fileName = fileName + "webTimers.csv";
         if (null != fileNameAdd)
             fileName = fileName.replace(".csv", "_"+fileNameAdd+"_.csv");
         CSVHandler.writeCsvFile(fileName, this.toCSVString(), CSV_FILE_HEADER);
@@ -245,7 +255,12 @@ public class WebPageTimersClass {
     // print page diff to CSV
 
     public void conductFullAnalysisAndPrint(String fileNameAdd, WebPageTimersClass baseReference){
-        String fileName = System.getenv().get("LOCAL_PATH") + System.getenv().get("WEB_PAGE_COMPARISON_FILE_NAME");
+        // TODO define WEB_PAGE_COMPARISON_FILE_NAME environment variable in order to name your comparison summary file. For example: pageComparison.csv
+        String fileName = System.getenv().get("LOCAL_PATH");
+        if (null != System.getenv().get("WEB_PAGE_COMPARISON_FILE_NAME"))
+            fileName = fileName + System.getenv().get("WEB_PAGE_COMPARISON_FILE_NAME");
+        else
+            fileName = fileName + "PageComparison.csv";
         if (null != fileNameAdd)
             fileName = fileName.replace(".csv", "_"+fileNameAdd+"_"+this.OSName+"_"+this.OSVersion+"_"+this.browserName+"_"+this.browserVersion+"_"+System.currentTimeMillis()+"_.csv");
 

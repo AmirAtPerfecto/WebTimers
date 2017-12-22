@@ -233,9 +233,17 @@ public class WebPageResourceTimerClass {
     }
 
     public void appendToCSV(String fileNameAdd){
-        String fileName = System.getenv().get("LOCAL_PATH") + System.getenv().get("WEB_RESOURCE_TIMERS_FILE_NAME");
+        // TODO define WEB_RESOURCE_TIMERS_FILE_NAME environment variable in order to set where the resource timers data will be saved. For example: webResourceTimers.csv
+
+        String fileName = System.getenv().get("LOCAL_PATH");
+        if (null != System.getenv().get("WEB_RESOURCE_TIMERS_FILE_NAME"))
+            fileName = fileName+ System.getenv().get("WEB_RESOURCE_TIMERS_FILE_NAME");
+        else
+            fileName = fileName + "webResourceTimers.csv";
         if (null != fileNameAdd)
             fileName = fileName.replace(".csv", "_"+fileNameAdd+"_.csv");
+        // TODO define APPLY_TIMESTAMP_TO_RESOURCE_FILENAME environment variable in order to save the resource timers data in separate files every run. For example: true
+
         if (null != System.getenv().get("APPLY_TIMESTAMP_TO_RESOURCE_FILENAME"))
             fileName = fileName.replace(".csv", System.currentTimeMillis()+".csv");
         CSVHandler.writeCsvFile(fileName, this.toCSVString(), CSV_FILE_HEADER);
