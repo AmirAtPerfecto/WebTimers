@@ -17,16 +17,16 @@ All that is left for you is to collect and analyze these as a part of your scrip
 ## Getting started
 **To get started**, you need to
 
-1- Define a few environment variables:
+Define a few environment variables:
 
-LOCAL_PATH: the folder to save all files, for example: /Users/Amir-Perfecto/Downloads/WebTimers/
-WEB_TIMERS_FILE_NAME: Optional, the name of the page level web timers file, for example: webtimers.csv
-WEB_RESOURCE_TIMERS_FILE_NAME: Optional, the name of the resource timers data file, for example: webResourcetimers.csv
-APPLY_TIMESTAMP_TO_RESOURCE_FILENAME: Optional, set this to any value (ex.: true) to save the resource timers data in a separate file each run.
+- LOCAL_PATH: the folder to save all files, for example: /Users/Amir-Perfecto/Downloads/WebTimers/
+- WEB_TIMERS_FILE_NAME: Optional, the name of the page level web timers file, for example: webtimers.csv
+- WEB_RESOURCE_TIMERS_FILE_NAME: Optional, the name of the resource timers data file, for example: webResourcetimers.csv
+- APPLY_TIMESTAMP_TO_RESOURCE_FILENAME: Optional, set this to any value (ex.: true) to save the resource timers data in a separate file each run.
 
-PERFECTO_CLOUD: your cloud name, for example, abc.perfectomobile.com
-PERFECTO_CLOUD_USERNAME: your cloud username, for example, abd@perfectomobile.com
-PERFECTO_CLOUD_SECURITY_TOKEN: your cloud security token. You can get it in your cloud, following these instructions: http://developers.perfectomobile.com/display/PD/Security+Token
+- PERFECTO_CLOUD: your cloud name, for example, abc.perfectomobile.com
+- PERFECTO_CLOUD_USERNAME: your cloud username, for example, abd@perfectomobile.com
+- PERFECTO_CLOUD_SECURITY_TOKEN: your cloud security token. You can get it in your cloud, following these instructions: http://developers.perfectomobile.com/display/PD/Security+Token
 
 
 
