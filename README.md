@@ -1,7 +1,8 @@
 # WebTimers
-This project demonstrates the usage of W3C Navigation Timing API (on any browser) to examine web responsiveness and root cause in CI.
+This project demonstrates the usage of W3C Navigation Timing API (on any browser) to examine web page responsiveness and root cause in any test as part of the CI, including smoke, regression etc. The project is build such that it should be very easy to add the page performance analysis to any existing test.
+Initially you can use this project to collect and analyze page and resource level timing for pages of your script. But advanced usage also allows you to compare the current run against previous executions by page load time, analysis of resources by total, types, size and duration, and then individual level resource analysis.
 
-Objective:
+## Objective:
 Assume you have a desktop or mobile website, and you develop it as part of your agile cycle. Would it be useful to know, by page, by browser/version/OS/OS version whether suddenly you increased the page load time significantly?
 Would it be good to know that immediately, say, as part of the smoke test on commit?
 Also, if the time did increase, would it be helpful to know what resources this page download, the URL for each, size, time etc.?
@@ -10,6 +11,43 @@ And last, would it be helpful to have all the data stored in CSV, or exportable,
 
 Well, W3C Navigation Timing API (https://www.w3.org/TR/navigation-timing/#sec-navigation-info-interface) and the Resource Timing API (https://developer.mozilla.org/en-US/docs/Web/API/Resource_Timing_API/Using_the_Resource_Timing_API) allow you to do just that. They contain the necessary data at the page level as well as the resource level.</br>
 All that is left for you is to collect and analyze these as a part of your script, compare to past data if you like, and save for future use.
+
+
+*************
+## Getting started
+** To get started **, you need to
+
+1- Define a few environment variables:
+
+LOCAL_PATH: the folder to save all files, for example: /Users/Amir-Perfecto/Downloads/WebTimers/
+WEB_TIMERS_FILE_NAME: Optional, the name of the page level web timers file, for example: webtimers.csv
+WEB_RESOURCE_TIMERS_FILE_NAME: Optional, the name of the resource timers data file, for example: webResourcetimers.csv
+APPLY_TIMESTAMP_TO_RESOURCE_FILENAME: Optional, set this to any value (ex.: true) to save the resource timers data in a separate file each run.
+
+PERFECTO_CLOUD: your cloud name, for example, abc.perfectomobile.com
+PERFECTO_CLOUD_USERNAME: your cloud username, for example, abd@perfectomobile.com
+PERFECTO_CLOUD_SECURITY_TOKEN: your cloud security token. You can get it in your cloud, following these instructions: http://developers.perfectomobile.com/display/PD/Security+Token
+
+
+
+
+2- Create your script- see NewTestClass.java, test() method.
+
+
+So calling appendToCSV(null) would result in the file name /Users/Amir/Download/webResourceTimers.csv
+or appendToCSM("Amazon") would result in the file name /Users/Amir/Download/webResourceTimers_Amazon_.csv
+
+if APPLY_TIMESTAMP_TO_RESOURCE_FILENAME was defined, an example file name would be
+
+
+WEB_PAGE_COMPARISON_FILE_NAME pageComparison.csv
+
+
+
+
+
+
+
 
 This project contains the following classes and the following is their usage:
 *************
