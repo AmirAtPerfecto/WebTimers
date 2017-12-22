@@ -8,16 +8,12 @@ public class ResourceTypeStats{
     private Long size;
     private Double duration;
     private String comparisonResult;
-    public static final String PAGE_TYPE_CSV_FILE_HEADER = "type, items, size, duration, comparison result";
+    static final String PAGE_TYPE_CSV_FILE_HEADER = "type, items, size, duration, comparison result";
 
 
     // ************* Getters and Setters
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public int getItems() {
@@ -54,14 +50,7 @@ public class ResourceTypeStats{
 
     //  ************* Constructors
 
-    public ResourceTypeStats(){
-        super();
-        this.items = 0;
-        this.size = 0L;
-        this.duration = 0.0;
-        this.comparisonResult = "";
-    }
-    public ResourceTypeStats(String type, Long size, Double duration){
+    ResourceTypeStats(String type, Long size, Double duration){
         super();
         this.type = type;
         this.items = 1;
@@ -69,11 +58,11 @@ public class ResourceTypeStats{
         this.duration = duration;
         this.comparisonResult = "";
     }
-    public ResourceTypeStats(String type, int items, Long size, Double duration){
+    private ResourceTypeStats(String type, int items, Long size, Double duration){
         this(type, size, duration);
         this.items = items;
     }
-    public ResourceTypeStats(String type, int items, Long size, Double duration, String comparisonResult){
+    ResourceTypeStats(String type, int items, Long size, Double duration, String comparisonResult){
         this(type, items, size, duration);
         this.comparisonResult = comparisonResult;
     }
@@ -87,7 +76,7 @@ public class ResourceTypeStats{
                 System.lineSeparator()+ "Size= "+size+
                 System.lineSeparator()+ "Duration= "+duration;
     }
-    public String toCSVString() {
+    private String toCSVString() {
         String send = type+ COMMA_DELIMITER;
         send = send + items+ COMMA_DELIMITER;
         send = send + size+ COMMA_DELIMITER;
