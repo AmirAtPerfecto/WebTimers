@@ -27,21 +27,16 @@ public class WebPageTimersClass {
     buildDOM,
     render;
 
-    private WebPageResourceTimerClass resourceTimers = null;
+    private WebPageResourceTimerClass resourceTimers;
 
     public WebPageResourceTimerClass getResourceTimers(){
         return resourceTimers;
     }
 
-    public void setResourceTimers(WebPageResourceTimerClass t){
-        this.resourceTimers = t;
-    }
-
-
     //  ************* Constructors
 
     // build a web page timers class from a web page driver
-    public WebPageTimersClass (RemoteWebDriver w, String name) {
+    WebPageTimersClass(RemoteWebDriver w, String name) {
         super();
         this.page = w.getCurrentUrl();
         this.runName = name;
@@ -59,7 +54,7 @@ public class WebPageTimersClass {
     }
 
     // build from a string, we will need this for the CSV comparison
-    public WebPageTimersClass(String line, String fileNameAdd){
+    private WebPageTimersClass(String line, String fileNameAdd){
         super();
         String[] tokens = line.split(COMMA_DELIMITER);
         this.id = Long.parseLong(tokens[PageTimers.ID.ordinal()]);
@@ -72,17 +67,17 @@ public class WebPageTimersClass {
         this.OSVersion = tokens[PageTimers.OS_VERSION.ordinal()];
         this.browserName = tokens[PageTimers.BROWSER_NAME.ordinal()];
         this.browserVersion = tokens[PageTimers.BROWSER_VERSION.ordinal()];
-        this.duration = Long.parseLong(tokens[PageTimers.DURATION.ordinal()]);;
-        this.networkTime = Long.parseLong(tokens[PageTimers.NETWORK.ordinal()]);;
-        this.httpRequest = Long.parseLong(tokens[PageTimers.HTTPREQ.ordinal()]);;
-        this.httpResponse = Long.parseLong(tokens[PageTimers.HTTPRES.ordinal()]);;
-        this.buildDOM = Long.parseLong(tokens[PageTimers.BUILDDOM.ordinal()]);;
-        this.render = Long.parseLong(tokens[PageTimers.RENDER.ordinal()]);;
+        this.duration = Long.parseLong(tokens[PageTimers.DURATION.ordinal()]);
+        this.networkTime = Long.parseLong(tokens[PageTimers.NETWORK.ordinal()]);
+        this.httpRequest = Long.parseLong(tokens[PageTimers.HTTPREQ.ordinal()]);
+        this.httpResponse = Long.parseLong(tokens[PageTimers.HTTPRES.ordinal()]);
+        this.buildDOM = Long.parseLong(tokens[PageTimers.BUILDDOM.ordinal()]);
+        this.render = Long.parseLong(tokens[PageTimers.RENDER.ordinal()]);
         this.resourceTimers = WebPageResourceTimerClass.buildWebPageTimersClassfromCSV(fileNameAdd);
     }
 
     // build from scratch.
-    public WebPageTimersClass(){
+    private WebPageTimersClass(){
         super();
         this.id = 0L;
         this.runName = "base";
@@ -148,6 +143,11 @@ public class WebPageTimersClass {
         this.buildDOM = domLoaded - responseEnd;
         this.render = loadEventEnd - domLoaded;
 
+        // in Edge, sometimes loadEventEnd is reported 0. Fun!
+        if (0 >= this.duration) {
+            this.duration = networkTime + httpRequest + httpResponse + buildDOM;
+            this.render = 0;
+        }
         System.out.println("Page Timing: " +  this.toString());
     }
 
@@ -278,7 +278,7 @@ public class WebPageTimersClass {
         HTTPREQ,
         HTTPRES,
         BUILDDOM,
-        RENDER;
+        RENDER
     }
 
     // What method to compare page load time by
@@ -286,7 +286,7 @@ public class WebPageTimersClass {
         VS_AVG,
         VS_MIN,
         VS_MAX,
-        VS_BASE;
+        VS_BASE
     }
 
 
